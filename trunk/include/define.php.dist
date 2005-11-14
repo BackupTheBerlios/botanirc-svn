@@ -1,0 +1,8 @@
+<?php
+	define('BOT_NICK',			'BotanIRC');
+	define('BOT_PWD',			'_YourPassword_');
+	
+	define('LOG',				true);
+	define('LOG_OUTPUT',		'console');		// 'console' or 'file'
+	define('LOG_WRITE_TYPE',	'overwrite');	// only for 'file' output
+?>

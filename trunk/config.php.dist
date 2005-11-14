@@ -1,0 +1,26 @@
+<?php
+	$cfg		= array();
+	/*
+	 * Configurations
+	 * 
+	 * Example:
+	 *  $cfg['irc.server.adress']['port']		= 6667;
+	 *  $cfg['irc.server.adress']['nick']		= 'BotNick';
+	 *  $cfg['irc.server.adress']['performs'][]	= '/msg nickserv identify Nick Pwd';
+	 *  $cfg['irc.server.adress']['performs'][]	= '/join #chan1';
+	 *  $cfg['irc.server.adress']['performs'][]	= '/join #chan2';
+	 *  $cfg['irc.server.adress']['domain']		= 'your.domain.com';
+	 * 
+	 */
+	
+	
+	//****************************************
+	
+	$plugins	= array();
+	/*
+	 * Plugins
+	 * 
+	 * Example:
+	 *  $plugins[] = 'plug_name';
+	 */	 
+?>
