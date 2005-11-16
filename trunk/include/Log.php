@@ -26,7 +26,7 @@
 		
 		public function __destruct() {
 			if($this->output == 'file') {
-				fclose($this->fp);
+				@fclose($this->fp);
 			}
 			
 			//$this->add('Fin de session');
@@ -37,7 +37,7 @@
 			
 			$file = $this->name . '.log';
 			
-			if($this->output == 'file') {
+			if($this->output == 'file' and !$this->fp) {
 				if(!($this->fp = fopen($file, $this->write_type))) {
 					die("Ouverture du fichier $file impossible.");
 				}

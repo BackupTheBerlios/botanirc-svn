@@ -6,11 +6,7 @@
 		// BOT version
 		static $version = 0.5;
 	
-		public function __construct($cfg) {
-			if(LOG) {
-				$this->log = new Log(LOG_OUTPUT, 'Main', LOG_WRITE_TYPE);
-			}
-			
+		public function __construct($cfg) {			
 			foreach($cfg as $server => $params) {
 				$this->servers[$server] = IRCServer::GetInstance($server);
 				$this->servers[$server]->init(	$server, $params['port'],
@@ -34,10 +30,8 @@
 						}
 
 					} elseif ($msg !== false) {					
-						foreach ($this->plugins as $plugin_name => $plugin) {
-							//if(LOG) $this->log->add("Appel du plugin $plugin_name");
-							
-							$plugin->start($msg);
+						foreach ($this->plugins as $plugin_name => $plugin) {							
+							$plugin->run($msg);
 						}
 					}
 					

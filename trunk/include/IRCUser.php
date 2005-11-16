@@ -8,9 +8,9 @@
 		
 		public $chans	= array();
 		
-		public function __construct($server, $chan) {
+		public function __construct($server, $nick) {
 			$this->server	= $server;
-			$this->name		= $chan;
+			$this->nick		= $nick;
 		}
 		
 		public function sendMsg($msg) {
@@ -24,7 +24,7 @@
 		public function delChan($chan) {
 			unset($this->chans[$chan]);
 			if(count($this->chans) == 0) {
-				$this->server->users->delUsers($this->nick);
+				$this->server->users->delUser($this->nick);
 			}
 		}
 		

@@ -61,18 +61,12 @@
 				if(LOG) $this->log->add("Message recu: <$content>");
 				
 				$msg = new IRCMessage($this->address, $content);
-				$savemsg = $msg;
+				if(LOG) $this->log->add('Objet Message: ' . print_r($msg, true));
 				
 				$method = 'on' . $msg->command;				
 		 		if(method_exists($this, $method)) {
 		 			$this->$method($msg);
 		 		}
-				if(LOG) {
-					if($savemsg !== $msg) {
-						var_dump($msg);
-						var_dump($savemsg);
-					}
-				}
 				
 				return $msg;
 			} else {
@@ -98,7 +92,6 @@
 			} else {
 				// User
 				$this->put('USER ' . $this->nick . ' ' . $this->nick . '@' . IRCServer::GetMyIP() . ' ' . $this->domain . ' :' . $this->nick);
-				//if(LOG) $this->log->add('IP récupérée: ' . IRCServer::GetMyIP());
 		
 				// Nick
 				$this->put('NICK ' . $this->nick);
@@ -145,9 +138,9 @@
 		
 		// Liste des users du chan qu'on vient de rejoindre
 		private function on353(IRCMessage $msg) {
-			if(!$this->chans->exists($msg->chan)) {
+			/*if(!$this->chans->exists($msg->chan)) {
 				$this->chans->addChan($msg->chan);
-			}
+			}*/
 
 			$nicks = array();
 			$nicks = split(' ', $msg->msg);
@@ -164,9 +157,6 @@
 					$this->users->getUserByNick($nick)->addChan($msg->chan, $mode);
 				}
 			}
-			
-			if(LOG) $this->log->add(explode("\n", 'Chans: ' . print_r($this->chans->getListAllChans(), true)));
-			if(LOG) $this->log->add(explode("\n", 'Users: ' . print_r($this->users->getListAllUsers(), true)));
 		}
 	
 		// Charactères illégaux ds le nick
@@ -189,19 +179,20 @@
 		
 		// JOIN
 		private function onJOIN(IRCMessage $msg) {
+			if(!$this->chans->exists($msg->chan)) {
+				$this->chans->addChan($msg->chan);
+			}
+			
 			if($this->nick != $msg->nick) {
-				list($mode, $nick) = IRCUser::SeparateNickAndMode($msg->nick);
+				//list($mode, $nick) = IRCUser::SeparateNickAndMode($msg->nick);
 				
-				$this->chans->getChanByName($msg->chan)->addUser($nick, $mode);
+				$this->chans->getChanByName($msg->chan)->addUser($msg->nick, '');
 				
 				if(!$this->users->exists($msg->nick)) {
 					$this->users->addUser($msg->nick);
 				}
-				$this->users->getUserByNick($msg->nick)->addChan($msg->chan, $mode);					
+				$this->users->getUserByNick($msg->nick)->addChan($msg->chan, '');					
 			}
-
-			if(LOG) $this->log->add(explode("\n", 'Chans: ' . print_r($this->chans->getListAllChans(), true)));
-			if(LOG) $this->log->add(explode("\n", 'Users: ' . print_r($this->users->getListAllUsers(), true)));
 		}
 		
 		// PART
@@ -213,18 +204,25 @@
 				
 				$this->chans->delChan($msg->chan);
 			} else {
+				$msg->userquit = $this->users->getUserByNick($msg->nick);
+				
 				$this->users->getUserByNick($msg->nick)->delChan($msg->chan);					
 			}
-
-			if(LOG) $this->log->add(explode("\n", 'Chans: ' . print_r($this->chans->getListAllChans(), true)));
-			if(LOG) $this->log->add(explode("\n", 'Users: ' . print_r($this->users->getListAllUsers(), true)));
+		}
+		
+		// QUIT
+		private function onQUIT(IRCMessage $msg) {
+			$msg->userquit = $this->users->getUserByNick($msg->nick);
+			
+			foreach($this->users->getUserByNick($msg->nick)->chans as $chan => $mode) {
+				$this->chans->getChanByName($chan)->delUser($msg->nick);
+			}
+			$this->users->delUser($msg->nick);
 		}
 
 		// CTCP
 		private function onPRIVMSG(IRCMessage $msg) {			
- 			if($msg->to == $this->nick) {
- 				if(LOG) $this->log->add($msg->msg);
- 				
+ 			if($msg->to == $this->nick) { 				
  				if(preg_match("`(VERSION|USERINFO|CLIENTINFO)`", $msg->msg)) {
 					$this->put('NOTICE ' . $msg->nick . ' PHPboT version ' . $this->main->version.' - PHP '.phpversion().' -- par Matt.Rixx');
 				
@@ -240,9 +238,19 @@
 		// KICK
 		private function onKICK(IRCMessage $msg) {
 			if($msg->to == $this->nick) {
+				foreach($this->chans->getChanByName($msg->chan)->users as $nick) {
+					$this->users->getUserByNick($nick)->delChan($msg->chan);
+				}
+				
+				$this->chans->delChan($msg->chan);
+				
 				sleep(1);
 				$this->joinChan($msg->chan);
 				$this->put('PRIVMSG ' . $msg->chan . ' :Merci ' . $msg->nick . ' !');
+			} else {
+				$msg->userquit = $this->users->getUserByNick($msg->nick);
+				
+				$this->users->getUserByNick($msg->to)->delChan($msg->chan);
 			}
 		}
 		
@@ -251,6 +259,21 @@
 			$this->disconnect();
 			sleep(3);
 			$msg = null;
+		}
+	
+		// NICK
+		private function onNICK(IRCMessage $msg) {
+			if($msg->nick == $this->nick) {
+				//TODO: gérer le changement de nick du bot
+			} else {				
+				foreach($this->users->getUserByNick($msg->nick)->chans as $chan => $mode) {
+					$this->chans->getChanByName($chan)->delUser($msg->nick);
+					list($mode, $nick) = IRCUser::SeparateNickAndMode($msg->nick);
+					$this->chans->getChanByName($chan)->addUser($nick, $mode);
+				}
+				
+				$this->users->getUserByNick($msg->nick)->nick = $msg->to;
+			}
 		}
 		
 		/*
