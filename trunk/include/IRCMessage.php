@@ -36,7 +36,7 @@
 
 			$T = array();
 			
-			//:HappyMarmotz!n=toto@sju13-3-82-234-223-31.fbx.proxad.net QUIT :"Client Exiting"
+			//:El_Newser!n=microtom@lns-bzn-32-82-254-16-254.adsl.proxad.net NICK :microtom
 			
 			if(preg_match('`^:(.*?)!(.*)?@(.*)? ([^ :]+) ([^ :]+) ([^ :]+) :(.*)$`', $this->raw, $T)) {
 				$this->nick		= $T[1];
@@ -76,7 +76,11 @@
 				if(substr($T[5], 0, 1) == '#') {
 					$this->chan	= $T[5];
 				} else {
-					$this->msg	= $T[5];					
+					if($this->command == 'NICK') {
+						$this->to = $T[5];
+					} else {
+						$this->msg	= $T[5];
+					}					
 				}
 				
 			} elseif (preg_match('`^:([^ :]+) ([0-9]{3}) ([^ :]+) (= )?([^ ]+) :(.*)$`', $this->raw, $T)) {
