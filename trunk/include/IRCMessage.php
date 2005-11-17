@@ -27,7 +27,7 @@
 		public $msg		= '';
 		
 		// info user qui est parti
-		public $userquit;
+		public $olduser;
 		
 		
 		public function __construct($address, $rawmsg) {			

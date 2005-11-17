@@ -56,7 +56,7 @@
 		
 		// QUIT
 		private function onQUIT(IRCMessage $msg) {
-			foreach($msg->userquit->chans as $chan => $mode) {
+			foreach($msg->olduser->chans as $chan => $mode) {
 				$txt = '*** ' . $msg->nick . ' has left IRC (' . $msg->msg . ')';
 				$this->addLog($chan, $txt);
 			}
@@ -64,8 +64,10 @@
 		
 		// NICK
 		private function onNICK(IRCMessage $msg) {
-			$txt = '*** ' . $msg->nick . ' changed nick to ' . $msg->to;
-			$this->addLog($msg->chan, $txt);
+			foreach($msg->olduser->chans as $chan => $mode) {
+				$txt = '*** ' . $msg->nick . ' changed nick to ' . $msg->to;
+				$this->addLog($chan, $txt);
+			}
 		}
 	
 		// KICK

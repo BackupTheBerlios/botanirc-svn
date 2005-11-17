@@ -212,7 +212,7 @@
 		
 		// QUIT
 		private function onQUIT(IRCMessage $msg) {
-			$msg->userquit = $this->users->getUserByNick($msg->nick);
+			$msg->olduser = $this->users->getUserByNick($msg->nick);
 			
 			foreach($this->users->getUserByNick($msg->nick)->chans as $chan => $mode) {
 				$this->chans->getChanByName($chan)->delUser($msg->nick);
@@ -248,7 +248,7 @@
 				$this->joinChan($msg->chan);
 				$this->put('PRIVMSG ' . $msg->chan . ' :Merci ' . $msg->nick . ' !');
 			} else {
-				$msg->userquit = $this->users->getUserByNick($msg->nick);
+				$msg->olduser = $this->users->getUserByNick($msg->nick);
 				
 				$this->users->getUserByNick($msg->to)->delChan($msg->chan);
 			}
@@ -265,7 +265,9 @@
 		private function onNICK(IRCMessage $msg) {
 			if($msg->nick == $this->nick) {
 				//TODO: gérer le changement de nick du bot
-			} else {				
+			} else {
+				$msg->olduser = $this->users->getUserByNick($msg->nick);
+			
 				foreach($this->users->getUserByNick($msg->nick)->chans as $chan => $mode) {
 					$this->chans->getChanByName($chan)->delUser($msg->nick);
 					list($mode, $nick) = IRCUser::SeparateNickAndMode($msg->nick);
