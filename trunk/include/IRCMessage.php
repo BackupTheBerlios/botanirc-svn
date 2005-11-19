@@ -83,7 +83,7 @@
 					}					
 				}
 				
-			} elseif (preg_match('`^:([^ :]+) ([0-9]{3}) ([^ :]+) (= )?([^ ]+) :(.*)$`', $this->raw, $T)) {
+			} elseif (preg_match('`^:([^ :]+) ([0-9]{3}) ([^ :]+) ([=|@] )?([^ ]+) :(.*)$`', $this->raw, $T)) {
 				$this->from		= $T[1];
 				$this->command	= $T[2];
 				$this->nick		= $T[3];

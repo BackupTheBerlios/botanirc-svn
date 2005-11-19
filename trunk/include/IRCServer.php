@@ -136,12 +136,12 @@
 			}
 		}
 		
+		private function on332(IRCMessage $msg) {
+			$this->chans->getChanByName($msg->chan)->topic = $msg->msg;
+		}
+		
 		// Liste des users du chan qu'on vient de rejoindre
 		private function on353(IRCMessage $msg) {
-			/*if(!$this->chans->exists($msg->chan)) {
-				$this->chans->addChan($msg->chan);
-			}*/
-
 			$nicks = array();
 			$nicks = split(' ', $msg->msg);
 			
@@ -184,8 +184,6 @@
 			}
 			
 			if($this->nick != $msg->nick) {
-				//list($mode, $nick) = IRCUser::SeparateNickAndMode($msg->nick);
-				
 				$this->chans->getChanByName($msg->chan)->addUser($msg->nick, '');
 				
 				if(!$this->users->exists($msg->nick)) {
@@ -223,7 +221,7 @@
 		// CTCP
 		private function onPRIVMSG(IRCMessage $msg) {			
  			if($msg->to == $this->nick) { 				
- 				if(preg_match("`(VERSION|USERINFO|CLIENTINFO)`", $msg->msg)) {
+ 				if(preg_match("`^\x01(VERSION|USERINFO|CLIENTINFO)\x01$`", $msg->msg)) {
 					$this->put('NOTICE ' . $msg->nick . ' PHPboT version ' . $this->main->version.' - PHP '.phpversion().' -- par Matt.Rixx');
 				
  				} elseif (preg_match("`(PING)`", $msg->msg)) {

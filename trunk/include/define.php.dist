@@ -1,4 +1,18 @@
 <?php
+	/*
+	 * This file is part of BotanIRC.
+	 * Ce fichier fait partie de BotanIRC.
+	 */
+	 
+	/**
+	 * Fichier de configuration standard.
+	 * 
+	 * @license http://opensource.org/licenses/lgpl-license.php GNU Lesser General Public License
+	 * @copyright Copyright &copy; 2005, Renaud LITTOLFF
+	 * @author Renaud LITTOLFF <matt.rixx@mattlab.com>
+	 * @version 1.0
+	 */
+
 	define('BOT_NICK',			'BotanIRC');
 	define('BOT_PWD',			'_YourPassword_');
 	

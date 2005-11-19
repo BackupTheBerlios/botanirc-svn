@@ -33,10 +33,11 @@
 		 */
 		 
 		static function SeparateNickAndMode($nick) {
-			$car1 = substr($nick, 0, 1);
+			//$car1 = substr($nick, 0, 1);
+			$modes = array('@', '+');
 			
-			if($car1 == '@' or $car1 == '+' or $car1 == '#') {
-				$mode = $car1;
+			if(in_array($nick[0],  $modes)) {
+				$mode = $nick[0];
 				$nick = substr($nick, 1);
 			} else {
 				$mode = '';	

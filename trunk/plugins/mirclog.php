@@ -35,9 +35,31 @@
 		
 
 		// PRIVMSG
-		private function onPRIVMSG(IRCMessage $msg) {			
+		private function onPRIVMSG(IRCMessage $msg) {
  			if(!empty($msg->chan)) {
-				$txt = '<' . $msg->nick . '> ' . $msg->msg;
+				/*
+				 * supprime les caracteres de mise en forme d'irc
+				 * (gras, souligné, etc...)
+				 * 
+				 * mais est-ce vraiment nécessaire?
+				 * 
+ 				$search = array("`\x02(.*)\x02?`U",
+ 								//"`\x03[0-9]([\,][0-9])?(.*)\x03`U",
+ 								"`\x03(?:\d{0,2},?\d{0,2})(.*)\x03?`",
+								"`\x16(.*)\x16?`U",
+								"`\x1F(.*)\x1F?`U");
+ 				$replace = array('\1', '\1', '\1', '\1');
+ 				
+ 				$tmpmsg = preg_replace($search, $replace, $msg->msg);
+ 				*/
+ 				
+ 				$action = array(); 				
+ 				if(preg_match('`^\x01ACTION(.*)\x01$`', $msg->msg, $action)) {
+					$txt = '*** ' . $msg->nick . $action[1];
+ 				} else {
+					$txt = '<' . $msg->nick . '> ' . $msg->msg;
+ 				}
+				
 				$this->addLog($msg->chan, $txt);
  			}
 		}
