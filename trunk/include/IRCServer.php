@@ -26,10 +26,6 @@
 			$this->users = new IRCUsersCollection($this);
 		}
 		
-		private function __destruct() {
-			$this->disconnect();
-		}
-		
 		public function Init($address, $port, $nick = 'PHPbot', $domain = 'none', $chans = '', $performs = '') {
 			if(LOG) {
 				$this->log = new Log(LOG_OUTPUT, 'Conn.' . $address, LOG_WRITE_TYPE);
@@ -266,14 +262,20 @@
 			} else {
 				$msg->olduser = $this->users->getUserByNick($msg->nick);
 			
+				list($newmode, $newnick) = IRCUser::SeparateNickAndMode($msg->to);
 				foreach($this->users->getUserByNick($msg->nick)->chans as $chan => $mode) {
 					$this->chans->getChanByName($chan)->delUser($msg->nick);
-					list($mode, $nick) = IRCUser::SeparateNickAndMode($msg->nick);
-					$this->chans->getChanByName($chan)->addUser($nick, $mode);
+
+					$this->chans->getChanByName($chan)->addUser($newnick, $newmode);
 				}
 				
-				$this->users->getUserByNick($msg->nick)->nick = $msg->to;
+				$this->users->delUser($msg->nick);
+				$this->users->addUser($newnick, $newmode);
 			}
+		}
+		
+		private function onTOPIC(IRCMessage $msg) {
+			$this->chans->getChanByName($msg->chan)->topic = $msg->msg;	
 		}
 		
 		/*

@@ -36,9 +36,18 @@
 
 			$T = array();
 			
-			//:El_Newser!n=microtom@lns-bzn-32-82-254-16-254.adsl.proxad.net NICK :microtom
-			
-			if(preg_match('`^:(.*?)!(.*)?@(.*)? ([^ :]+) ([^ :]+) ([^ :]+) :(.*)$`', $this->raw, $T)) {
+			if(preg_match('`^:(.*?)!(.*)?@(.*)? ([^ :]+) ([^ :]+) ([+|-].*)$`', $this->raw, $T)) {
+				$this->nick		= $T[1];
+				$this->username	= $T[2];
+				$this->host		= $T[3];
+				$this->from		= $this->nick . '!' . $this->username . '@' . $this->host;
+				
+				$this->command	= $T[4];
+				$this->chan		= $T[5];
+				$this->msg		= $T[6];
+				$this->to		= $T[7];
+				
+			} elseif(preg_match('`^:(.*?)!(.*)?@(.*)? ([^ :]+) ([^ :]+) ([^ :]+) :(.*)$`', $this->raw, $T)) {
 				$this->nick		= $T[1];
 				$this->username	= $T[2];
 				$this->host		= $T[3];
