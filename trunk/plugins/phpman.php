@@ -25,11 +25,21 @@
 					$signature = strip_tags($T[1]);
 					$signature = str_replace($function, IRC_FONT_BOLD . $function . IRC_FONT_BOLD, $signature);
 					
-					$this->main->servers[$msg->address]->chans->getChanByName($msg->chan)->sendMsg($description);
-					$this->main->servers[$msg->address]->chans->getChanByName($msg->chan)->sendMsg($signature);
-					$this->main->servers[$msg->address]->chans->getChanByName($msg->chan)->sendMsg($php_version . ' - ' . $this->phpsite . $function);
+					if(empty($msg->chan)) {
+						$this->main->servers[$msg->address]->users->getUserByNick($msg->nick)->sendMsg($description);
+						$this->main->servers[$msg->address]->users->getUserByNick($msg->nick)->sendMsg($signature);
+						$this->main->servers[$msg->address]->users->getUserByNick($msg->nick)->sendMsg($php_version . ' - ' . $this->phpsite . $function);						
+					} else {
+						$this->main->servers[$msg->address]->chans->getChanByName($msg->chan)->sendMsg($description);
+						$this->main->servers[$msg->address]->chans->getChanByName($msg->chan)->sendMsg($signature);
+						$this->main->servers[$msg->address]->chans->getChanByName($msg->chan)->sendMsg($php_version . ' - ' . $this->phpsite . $function);
+					}
 				} else {
-					$this->main->servers[$msg->address]->chans->getChanByName($msg->chan)->sendMsg(IRC_FONT_BOLD . 'PHPMAN:' . IRC_FONT_BOLD . " '" . $function . "' not found");					
+					if(empty($msg->chan)) {
+						$this->main->servers[$msg->address]->users->getUserByNick($msg->nick)->sendMsg(IRC_FONT_BOLD . 'PHPMAN:' . IRC_FONT_BOLD . " '" . $function . "' not found");
+					} else {
+						$this->main->servers[$msg->address]->chans->getChanByName($msg->chan)->sendMsg(IRC_FONT_BOLD . 'PHPMAN:' . IRC_FONT_BOLD . " '" . $function . "' not found");
+					}					
 				}
 			}
 		}
