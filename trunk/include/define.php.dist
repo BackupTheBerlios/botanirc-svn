@@ -19,4 +19,9 @@
 	define('LOG',				true);
 	define('LOG_OUTPUT',		'console');		// 'console' or 'file'
 	define('LOG_WRITE_TYPE',	'overwrite');	// only for 'file' output
+	
+	define('IRC_FONT_BOLD',			"\x02");
+	define('IRC_FONT_COLOR',		"\x03");
+	define('IRC_FONT_UNDERLINE',	"\x16");
+	define('IRC_FONT_REVERSE',		"\x1F");
 ?>

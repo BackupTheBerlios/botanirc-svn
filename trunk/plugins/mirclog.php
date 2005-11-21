@@ -151,7 +151,5 @@
 			$txt = '*** ' . $msg->nick . ' sets mode: ' . $msg->msg;
 			$this->addLog($msg->chan, $txt);
 		}
-		
-		public function help(){}
 	}
 ?>

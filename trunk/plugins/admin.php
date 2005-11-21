@@ -22,7 +22,5 @@
 				}
 			}
 		}
-			
-		public function help(){}
 	}
 ?>

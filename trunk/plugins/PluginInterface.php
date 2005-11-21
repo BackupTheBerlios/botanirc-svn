@@ -1,7 +1,6 @@
 <?php
 	interface PluginInterface {
 		public function __construct($main);
-		public function run(IRCMessage $msg);	
-		public function help();
+		public function run(IRCMessage $msg);
 	}
 ?>
